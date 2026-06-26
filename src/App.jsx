@@ -13,7 +13,8 @@ function App() {
   const [code1, setCode1] = useState("US");
   const [code2, setCode2] = useState("IN");
   const [exchangeAmount, setExchangeAmount] = useState("Loading...");
-  const [total, setTotal] = useState("Loading...");
+
+  const total = exchangeAmount && amount ? (exchangeAmount * Number(amount)).toFixed(2) : "";
 
   const getExchange = async () => {
     try {
@@ -23,7 +24,6 @@ function App() {
       const data = await response.json();
       const rate = data.rates[currency2];
       setExchangeAmount(rate);
-      setTotal(rate * amount);
     } catch (error) {
       console.log(error);
     }
@@ -35,7 +35,6 @@ function App() {
     setCurrency2("INR");
     setCode1("US");
     setCode2("IN");
-    getExchange();
   };
 
   const arr = [
@@ -45,7 +44,7 @@ function App() {
 
   useEffect(() => {
     getExchange();
-  }, [currency1, currency2, code1, code2, amount]);
+  }, [currency1, currency2]);
 
   function revertAll() {
     const tempCode = code1;
@@ -71,7 +70,7 @@ function App() {
             onChange={(e) => {
               const value = e.target.value;
               if (/^\d*$/.test(value)) {
-                setAmount(value);
+                setAmount(Number(value));
               }
             }}
           />
@@ -108,18 +107,17 @@ function App() {
             <select value={code2} onChange = {(e) => {
               const code = e.target.value;
               setCode2(code);
-
-                const country = countries.find((item) => item.code === code);
-                setCurrency2(country.currency);
-              }
-            } className="bg-teal-600 mt-5 rounded-lg pl-1 text-lg">
-              {
-                countries.map((country, idx) => {
-                  return (
-                    <option key={idx} className="text-black">{country.code}</option>
-                  );
-                })
-              }
+              const country = countries.find((item) => item.code === code);
+              setCurrency2(country.currency);
+            }}
+            className="bg-teal-600 mt-5 rounded-lg pl-1 text-lg">
+            {
+              countries.map((country, idx) => {
+                return (
+                  <option key={idx} className="text-black">{country.code}</option>
+                );
+              })
+            }
             </select>
           </div>
 
